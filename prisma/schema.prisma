@@ -14,18 +14,24 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  name     String?
-  password String
-  order    Order[]
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String?
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  order      Order[]
+  Cart       Cart[]
 }
 
 model Product {
-  id        Int         @id @default(autoincrement())
-  name      String
-  price     Int
-  ItemOrder ItemOrder[]
+  id         Int         @id @default(autoincrement())
+  name       String
+  price      Int
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  ItemOrder  ItemOrder[]
+  Cart       Cart[]
 }
 
 model Order {
@@ -46,4 +52,14 @@ model ItemOrder {
   price     Float
 
   @@id([productId, orderId])
+}
+
+model Cart {
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  userId    Int
+  user      User    @relation(fields: [userId], references: [id])
+  quantity  Int
+
+  @@id([productId, userId])
 }

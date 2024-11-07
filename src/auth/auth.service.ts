@@ -6,7 +6,8 @@ import {
 } from '@nestjs/common';
 import { ArgonService } from 'argon2/argon.service';
 import { PrismaService } from 'prisma/prisma.service';
-import { UserDto } from 'src/dto/user.dto';
+import { UserDto } from 'src/dto/client/user.dto';
+import { UserDbDto } from 'src/dto/db/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly argon: ArgonService,
   ) {}
-  async createUser(userData: UserDto) {
+  async createUser(userData: UserDto): Promise<UserDbDto> {
     try {
       const email = await this.prisma.user.findUnique({
         where: { email: userData.email },
@@ -33,7 +34,7 @@ export class AuthService {
       throw e;
     }
   }
-  async authorizeUser(userData: UserDto) {
+  async authorizeUser(userData: UserDto): Promise<UserDbDto> {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email: userData.email },
