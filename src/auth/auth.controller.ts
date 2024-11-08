@@ -7,6 +7,8 @@ import { AuthService } from './auth.service';
 @Controller('/auth')
 export class AuthController {
   constructor(private readonly AuthService: AuthService) {}
+
+  @Post('/signup')
   @ApiOperation({
     summary: 'Зарегистрировать пользователя',
     description: 'Регистрация пользователя',
@@ -19,7 +21,6 @@ export class AuthController {
     description: 'Ошибка сервера',
     status: '5XX',
   })
-  @Post('/signup')
   async signUp(@Body() user: UserDto) {
     await this.AuthService.createUser(user);
     return {
@@ -28,6 +29,7 @@ export class AuthController {
     };
   }
 
+  @Post('/signin')
   @ApiOperation({
     summary: 'Авторизировать пользователя',
     description: 'Авторизирует пользователя на сайт',
@@ -40,9 +42,8 @@ export class AuthController {
     description: 'Ошибка сервера',
     status: '5XX',
   })
-  @Post('/signin')
-  async signIn(@Body() data: UserDto) {
-    await this.AuthService.authorizeUser(data);
+  async signIn(@Body() user: UserDto) {
+    await this.AuthService.authorizeUser(user);
     return {
       message: 'Пользователь успешно авторизировался',
     };

@@ -16,7 +16,11 @@ export class ProductService {
 
   async getAllProducts(): Promise<ProductDbDto[]> {
     try {
-      return await this.prisma.product.findMany();
+      const products = await this.prisma.product.findMany();
+      if (products.length === 0) {
+        throw new NotFoundException('В бд отсутствуют товары');
+      }
+      return products;
     } catch (e) {
       throw e;
     }
@@ -28,7 +32,7 @@ export class ProductService {
         where: { id: productId },
       });
       if (!product) {
-        throw new NotFoundException(`Продукт с ID ${productId} не найден`);
+        throw new NotFoundException(`Товар с ID ${productId} не найден`);
       }
       return product;
     } catch (e) {
@@ -41,10 +45,7 @@ export class ProductService {
     product: ProductDto,
   ): Promise<ProductDbDto> {
     try {
-      const productDb = await this.findByProductId(productId);
-      if (!productDb) {
-        throw new NotFoundException(`Продукт с ID ${productId} не найден`);
-      }
+      await this.findByProductId(productId);
       return await this.prisma.product.update({
         where: { id: productId },
         data: product,
@@ -56,6 +57,7 @@ export class ProductService {
 
   async deleteProduct(productId: number): Promise<ProductDbDto> {
     try {
+      await this.findByProductId(productId);
       return await this.prisma.product.delete({ where: { id: productId } });
     } catch (e) {
       throw e;

@@ -41,7 +41,7 @@ export class AuthService {
       });
 
       if (
-        !user ||
+        !user &&
         !(await this.argon.verifyPassword(user.password, userData.password))
       ) {
         throw new HttpException(

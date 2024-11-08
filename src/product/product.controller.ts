@@ -4,12 +4,12 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PrismaService } from 'prisma/prisma.service';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProductDto } from 'src/dto/client/product.dto';
 import { ProductDbDto } from 'src/dto/db/product.dto';
 import { ProductService } from './product.service';
@@ -17,25 +17,22 @@ import { ProductService } from './product.service';
 @ApiTags('Products')
 @Controller('/product')
 export class ProductController {
-  constructor(
-    private readonly ProductService: ProductService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly ProductService: ProductService) {}
 
+  @Get()
   @ApiOperation({
-    summary: 'Вернуть массив товаров',
-    description: 'Позволяет вернуть массив всех товаров',
+    summary: 'Получить массив товаров',
+    description: 'Позволяет получить массив всех товаров',
   })
   @ApiResponse({
     status: '2XX',
-    description: 'Успешно вернул массив всех товаров',
+    description: 'Массив товаров успешно получен',
     type: ProductDbDto,
   })
   @ApiResponse({
     status: '5XX',
     description: 'Ошибка сервера',
   })
-  @Get()
   async getAllProduct() {
     const products = await this.ProductService.getAllProducts();
     return {
@@ -44,6 +41,7 @@ export class ProductController {
     };
   }
 
+  @Post()
   @ApiOperation({
     summary: 'Добавить товар',
     description: 'Позволяет добавить новый товар в бд',
@@ -57,7 +55,6 @@ export class ProductController {
     status: '5XX',
     description: 'Ошибка сервера',
   })
-  @Post('/create')
   async addProduct(@Body() product: ProductDto) {
     const createdProduct = await this.ProductService.createProduct(product);
     return {
@@ -66,11 +63,12 @@ export class ProductController {
     };
   }
 
+  @Put(':id')
   @ApiOperation({
     summary: 'Обновить товара',
     description: 'Полное обновление товара',
   })
-  @ApiQuery({
+  @ApiParam({
     name: 'id',
     description: 'ID товара',
     required: true,
@@ -84,15 +82,16 @@ export class ProductController {
   })
   @ApiResponse({
     status: '4XX',
-    description: 'Продукт с ID 10 не найден',
+    description: `Продукт указанным ID не найден`,
   })
   @ApiResponse({
     status: '5XX',
     description: 'Ошибка сервера',
   })
-  @Put('/update/:id')
-  async updateProductPut(@Param('id') id: string, @Body() product: ProductDto) {
-    const productId = parseInt(id, 10);
+  async updateProductPut(
+    @Param('id', new ParseIntPipe()) productId: number,
+    @Body() product: ProductDto,
+  ) {
     const updatedProduct = await this.ProductService.updateProduct(
       productId,
       product,
@@ -103,11 +102,12 @@ export class ProductController {
     };
   }
 
+  @Patch(':id')
   @ApiOperation({
     summary: 'Частично обновить товар',
     description: 'Частичное обновление товара в бд',
   })
-  @ApiQuery({
+  @ApiParam({
     name: 'id',
     description: 'ID товара',
     required: true,
@@ -121,18 +121,17 @@ export class ProductController {
   })
   @ApiResponse({
     status: '4XX',
-    description: 'Продукт с ID 10 не найден',
+    description: 'Продукт указанным ID не найден',
   })
   @ApiResponse({
     status: '5XX',
     description: 'Ошибка сервера',
   })
-  @Patch('/update/:id')
   async updateProductPatch(
-    @Param('id') id: string,
+    @Param('id', new ParseIntPipe()) productId: number,
     @Body() product: ProductDto,
   ) {
-    const productId = parseInt(id, 10);
+    await this.ProductService.findByProductId(productId);
     const updatedProduct = await this.ProductService.updateProduct(
       productId,
       product,
@@ -143,11 +142,12 @@ export class ProductController {
     };
   }
 
+  @Delete(':id')
   @ApiOperation({
     summary: 'Удалить товар',
     description: 'Удаление товара из бд',
   })
-  @ApiQuery({
+  @ApiParam({
     name: 'id',
     description: 'ID товара',
     required: true,
@@ -161,18 +161,13 @@ export class ProductController {
   })
   @ApiResponse({
     status: '4XX',
-    description: 'Продукт с ID 10 не найден',
+    description: 'Продукт указанным ID не найден',
   })
   @ApiResponse({
     status: '5XX',
     description: 'Ошибка сервера',
   })
-  @Delete('/delete/:id')
-  async deleteProduct(@Param('id') id: string) {
-    const productId = parseInt(id, 10);
-
-    await this.ProductService.findByProductId(productId);
-
+  async deleteProduct(@Param('id', new ParseIntPipe()) productId: number) {
     const deletedProduct = await this.ProductService.deleteProduct(productId);
     return {
       message: 'Товар удален',

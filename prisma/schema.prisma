@@ -25,13 +25,14 @@ model User {
 }
 
 model Product {
-  id         Int         @id @default(autoincrement())
-  name       String
-  price      Int
-  created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
-  ItemOrder  ItemOrder[]
-  Cart       Cart[]
+  id                Int                 @id @default(autoincrement())
+  name              String
+  price             Int
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  ItemOrder         OrderItem[]
+  Cart              Cart[]
+  ProductToCategory ProductToCategory[]
 }
 
 model Order {
@@ -40,10 +41,10 @@ model Order {
   totalPrice Float
   userId     Int
   User       User        @relation(fields: [userId], references: [id])
-  ItemOrder  ItemOrder[]
+  ItemOrder  OrderItem[]
 }
 
-model ItemOrder {
+model OrderItem {
   productId Int
   product   Product @relation(fields: [productId], references: [id])
   orderId   Int
@@ -62,4 +63,22 @@ model Cart {
   quantity  Int
 
   @@id([productId, userId])
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  ProductToCategory ProductToCategory[]
+}
+
+model ProductToCategory {
+  productId  Int
+  product    Product  @relation(fields: [productId], references: [id])
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([productId, categoryId])
 }
