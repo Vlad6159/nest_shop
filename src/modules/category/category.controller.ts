@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -9,11 +10,11 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CategortyDto } from 'src/dto/client/category.dto';
-import { CategoryDbDto } from 'src/dto/db/category.dto';
+import { CategoryDbDto } from 'src/common/dto/db/category.dto';
 import { CategoryService } from './category.service';
+import { CategortyDto } from 'src/common/dto/client/category.dto';
 
-@ApiTags('category')
+@ApiTags('Category')
 @Controller('category')
 export class CategoryController {
   constructor(private readonly CategoryService: CategoryService) {}
@@ -119,6 +120,29 @@ export class CategoryController {
     return {
       message: 'Категория успешно обновилась',
       updatedCategory,
+    };
+  }
+
+  @Delete(':id')
+  @ApiOperation({
+    summary: 'Удалить категорию',
+    description: 'Удаление категории',
+  })
+  @ApiResponse({
+    status: '2XX',
+    description: 'Категория успешно удалилась',
+    type: CategoryDbDto,
+  })
+  @ApiResponse({
+    status: '5XX',
+    description: 'Ошибка сервера',
+  })
+  async deleteCategory(@Param('id', new ParseIntPipe()) categoryId) {
+    const deletedCategory =
+      await this.CategoryService.deleteCategory(categoryId);
+    return {
+      message: 'Категория успешно удалилась',
+      deletedCategory,
     };
   }
 }

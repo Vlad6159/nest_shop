@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { CategortyDto } from 'src/dto/client/category.dto';
-import { CategoryDbDto } from 'src/dto/db/category.dto';
+import { CategortyDto } from 'src/common/dto/client/category.dto';
+import { CategoryDbDto } from 'src/common/dto/db/category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -33,6 +33,14 @@ export class CategoryService {
         where: { id: categoryId },
         data: category,
       });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async deleteCategory(categoryId) {
+    try {
+      return await this.prisma.category.delete({ where: { id: categoryId } });
     } catch (e) {
       throw e;
     }

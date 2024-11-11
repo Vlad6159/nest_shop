@@ -10,12 +10,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ProductDto } from 'src/dto/client/product.dto';
-import { ProductDbDto } from 'src/dto/db/product.dto';
+import { ProductDbDto } from 'src/common/dto/db/product.dto';
 import { ProductService } from './product.service';
+import { ProductDto } from 'src/common/dto/client/product.dto';
 
-@ApiTags('Products')
-@Controller('/product')
+@ApiTags('Product')
+@Controller('product')
 export class ProductController {
   constructor(private readonly ProductService: ProductService) {}
 

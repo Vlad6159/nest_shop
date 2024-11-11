@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { CartDto } from 'src/dto/client/cart.dto';
+import { CartDto } from 'src/common/dto/client/cart.dto';
 
 @Injectable()
 export class CartService {

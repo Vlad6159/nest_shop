@@ -8,8 +8,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CartDto } from 'src/dto/client/cart.dto';
 import { CartService } from './cart.service';
+import { CartDto } from 'src/common/dto/client/cart.dto';
 
 @ApiTags('Cart')
 @Controller('cart')

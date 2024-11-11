@@ -7,8 +7,6 @@ export class UserDbDto {
   email: string;
   @ApiProperty({ description: 'Имя пользователя' })
   name?: string;
-  @ApiProperty({ description: 'Пароль пользователя' })
-  password: string;
   @ApiProperty({ description: 'Дата создания' })
   created_at: Date;
   @ApiProperty({ description: 'Дата обновления' })
